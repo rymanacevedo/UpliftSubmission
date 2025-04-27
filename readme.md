@@ -1,90 +1,40 @@
 # 📋 Insurance Claims Processing Kata
 
-## The Problem
+## Instructions for Running the App (with Bun)
 
-You’ve been asked to implement the core logic for an insurance claims processing system. The system should evaluate incoming claims based on a few business rules and return a final payout amount. This version of the kata is designed to be completed in 90 minutes or less and focuses on essential logic and test-driven development (TDD).
+1. **Install Bun**  
+   If you don’t have Bun, install it (on Windows, use WSL or follow [Bun’s Windows guide](https://bun.sh/docs/installation)):
+   ```sh
+   curl -fsSL https://bun.sh/install | bash
+   ```
 
----
+2. **Install dependencies**  
+   ```sh
+   bun install
+   ```
 
-## Business Requirements
+3. **Run tests**  
+   ```sh
+   bun test
+   ```
 
-### Submitting a Claim
+4. **Lint and format code**  
+   If you use Biome or another tool, run:
+   ```sh
+   bun run lint
+   bun run format
+   ```
 
-**As an** insured person, **I want** to submit a claim with incident details, **so that** I can receive a payout.
+## Decisions and Trade-offs
 
-Each claim has:
-- `policyId`
-- `incidentType` (e.g., accident, theft, fire, water damage)
-- `incidentDate`
-- `amountClaimed`
+- **Switched to Bun:**  
+  Bun offers faster installs and test runs than npm/yarn. It’s modern and supports TypeScript and Jest-like testing out of the box.
 
-Example:
-```ts
-const exampleClaim = {
-  policyId: 'POL123',
-  incidentType: 'fire',
-  incidentDate: new Date('2023-06-15'),
-  amountClaimed: 3000,
-};
-```
+- **Business Logic:**  
+  All claim evaluation logic is in [`ClaimProcessor`](src/services/ClaimProcessor.ts) for clarity and testability.
 
----
+## If I Had More Time
 
-### Example Policy Data
-
-To help support your solution, here is an example of what policies might look like:
-
-```ts
-type IncidentType = 'accident' | 'theft' | 'fire' | 'water damage';
-
-interface Policy {
-  policyId: string;
-  startDate: Date;
-  endDate: Date;
-  deductible: number;
-  coverageLimit: number;
-  coveredIncidents: IncidentType[];
-}
-
-const examplePolicies: Policy[] = [
-  {
-    policyId: 'POL123',
-    startDate: new Date('2023-01-01'),
-    endDate: new Date('2024-01-01'),
-    deductible: 500,
-    coverageLimit: 10000,
-    coveredIncidents: ['accident', 'fire'],
-  },
-  {
-    policyId: 'POL456',
-    startDate: new Date('2022-06-01'),
-    endDate: new Date('2025-06-01'),
-    deductible: 250,
-    coverageLimit: 50000,
-    coveredIncidents: ['accident', 'theft', 'fire', 'water damage'],
-  },
-];
-```
-
----
-
-### Evaluating a Claim
-
-Each claim evaluation should return a result with the following fields:
-
-- `approved: boolean` – Was the claim accepted?
-- `payout: number` – Final payout amount
-- `reasonCode: string` – Explanation code (e.g., `APPROVED`, `POLICY_INACTIVE`, `NOT_COVERED`, `ZERO_PAYOUT`)
-
----
-
-### Business Rules
-
-- The policy must be active on the `incidentDate`
-- The `incidentType` must be included in the policy’s `coveredIncidents`
-- Payout = `amountClaimed - deductible`
-- If payout is zero or negative, return 0 with reasonCode: `ZERO_PAYOUT`
-- The payout may not exceed the `coverageLimit`
-
----
-
+- Add a database or API layer.
+- Add more tests and validation.
+- Improve documentation and types.
