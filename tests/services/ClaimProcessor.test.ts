@@ -16,6 +16,20 @@ it('should deny claim if no policy is expired', async() => {
     expect(processor.getClaimStatus()).toBe('denied');
 });
 
+it('should deny claim if incidentType is not covered', async() => {
+    const processor = new ClaimProcessor();
+    const notCoveredPolicy: Policy = {
+        policyId: 'POL123',
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2023-01-01'),
+        deductible: 500,
+        coverageLimit: 10000,
+        coveredIncidents: ['accident', 'fire'],
+    }
+    processor.evaluateClaim(exampleClaim, notCoveredPolicy);
+    expect(processor.getClaimStatus()).toBe('denied');
+})
+
 it('should approve a claim', async() => {
     const processor = new ClaimProcessor();
     processor.evaluateClaim({}, []);
