@@ -62,6 +62,21 @@ it('should return zero if payout is negative', async() => {
     expect(reasonCode).toBe(ReasonCode.ZERO_PAYOUT);
 });
 
+it('should return zero if payout is zero because deductible is equal to amount claimed', async() => {
+    const processor = new ClaimProcessor();
+    const validPolicyWithEqualDeductible: Policy = {
+        policyId: 'POL123',
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2025-12-31'),
+        deductible: exampleClaim.amountClaimed,
+        coverageLimit: 10000,
+        coveredIncidents: ['accident', 'fire'],
+    }
+    const {payout, reasonCode} = processor.evaluateClaim(exampleClaim, validPolicyWithEqualDeductible);
+    expect(payout).toBe(0);
+    expect(reasonCode).toBe(ReasonCode.ZERO_PAYOUT);
+});
+
 // it('should approve a claim', async() => {
 //     const processor = new ClaimProcessor();
 //     processor.evaluateClaim({}, []);
