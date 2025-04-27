@@ -28,7 +28,7 @@ it('should deny claim if incidentType is not covered', async() => {
     }
     processor.evaluateClaim(exampleClaim, notCoveredPolicy);
     expect(processor.getClaimStatus()).toBe('denied');
-})
+});
 
 it('should approve a claim', async() => {
     const processor = new ClaimProcessor();

@@ -19,7 +19,12 @@ export class ClaimProcessor {
         if(policy.endDate < new Date()) {
             this.claimStatus = 'denied';
             return;
-        }   
+        }
+
+        if(!policy.coveredIncidents.includes(claim.incidentType)) {
+            this.claimStatus = 'denied';
+            return;
+        }
     }
 
     public getClaimStatus(): ClaimStatus {
