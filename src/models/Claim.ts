@@ -1,8 +1,8 @@
-import { IncidentType } from "./Incident";
+import type { IncidentType } from './Incident';
 
 export type Claim = {
- policyId: string;
- incidentType: IncidentType;
- incidentDate: Date;
- amountClaimed: number;
-}
+	policyId: string;
+	incidentType: IncidentType;
+	incidentDate: Date;
+	amountClaimed: number;
+};

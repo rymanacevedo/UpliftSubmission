@@ -1,8 +1,6 @@
 import { createPolicy } from './../helpers/createPolicy';
 import { createClaim } from './../helpers/createClaim';
-import { Policy } from '../../src/models/Policy';
 import { ReasonCode } from '../../src/models/ReasonCode';
-import { exampleClaim } from './../../data/claim';
 import { ClaimProcessor } from './../../src/services/ClaimProcessor';
 
 describe('ClaimProcessor Evaluation', () => {
@@ -71,7 +69,6 @@ describe('ClaimProcessor Evaluation', () => {
     
         const {payout} = processor.evaluateClaim(claim, policyWithLowCoverageLimit);
         expect(payout).toBeLessThanOrEqual(policyWithLowCoverageLimit.coverageLimit);
-    })
-
+    });
 }
 );

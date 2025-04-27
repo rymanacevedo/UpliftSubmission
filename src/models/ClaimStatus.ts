@@ -1,1 +1,0 @@
-export type ClaimStatus = 'pending' | 'approved' | 'denied';
