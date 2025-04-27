@@ -30,6 +30,21 @@ it('should deny claim if incidentType is not covered', async() => {
     expect(processor.getClaimStatus()).toBe('denied');
 });
 
+it('should payout the amount claimed minus deductible', async() => {
+    const processor = new ClaimProcessor();
+    const validPolicy: Policy = {
+        policyId: 'POL123',
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2023-12-31'),
+        deductible: 500,
+        coverageLimit: 10000,
+        coveredIncidents: ['accident', 'fire'],
+    }
+    
+    const {payout} = processor.evaluateClaim(exampleClaim, validPolicy);
+    expect(payout).toBe(exampleClaim.amountClaimed - validPolicy.deductible);
+}
+);
 it('should approve a claim', async() => {
     const processor = new ClaimProcessor();
     processor.evaluateClaim({}, []);
