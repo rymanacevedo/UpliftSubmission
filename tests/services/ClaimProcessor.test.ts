@@ -77,6 +77,21 @@ it('should return zero if payout is zero because deductible is equal to amount c
     expect(reasonCode).toBe(ReasonCode.ZERO_PAYOUT);
 });
 
+it('should return no more then the coverage limit', async() => {
+    const processor = new ClaimProcessor();
+    const policyWithLowCoverageLimit: Policy = {
+        policyId: 'POL123',
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2025-12-31'),
+        deductible: 500,
+        coverageLimit: 1000,
+        coveredIncidents: ['accident', 'fire'],
+    }
+
+    const {payout} = processor.evaluateClaim(exampleClaim, policyWithLowCoverageLimit);
+    expect(payout).toBeLessThanOrEqual(policyWithLowCoverageLimit.coverageLimit);
+})
+
 // it('should approve a claim', async() => {
 //     const processor = new ClaimProcessor();
 //     processor.evaluateClaim({}, []);
