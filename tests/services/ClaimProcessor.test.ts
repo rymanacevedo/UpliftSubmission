@@ -35,7 +35,7 @@ it('should payout the amount claimed minus deductible', async() => {
     const validPolicy: Policy = {
         policyId: 'POL123',
         startDate: new Date('2022-01-01'),
-        endDate: new Date('2023-12-31'),
+        endDate: new Date('2025-12-31'),
         deductible: 500,
         coverageLimit: 10000,
         coveredIncidents: ['accident', 'fire'],
