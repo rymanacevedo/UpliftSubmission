@@ -2,32 +2,46 @@ import type { ClaimStatus } from './../models/ClaimStatus';
 import { Claim } from "../models/Claim";
 import { Policy } from "../models/Policy";
 
+interface ClaimResult {
+    status: ClaimStatus;
+    reasonCode: string | null;
+    payout: number;
+}
 
 export class ClaimProcessor {
-    private claimStatus: ClaimStatus;
 
-    constructor() {
-        this.claimStatus = 'pending';
-    }
 
-    public evaluateClaim(claim: Claim, policy: Policy) {
+    public evaluateClaim(claim: Claim, policy: Policy): ClaimResult {
         if(!policy) {
-            this.claimStatus = 'denied';
-            return;
+            return {
+                status: 'denied',
+                reasonCode: 'policy_not_found',
+                payout: 0
+            };
         }
 
         if(policy.endDate < new Date()) {
-            this.claimStatus = 'denied';
-            return;
+            return {
+                status: 'denied',
+                reasonCode: 'policy_expired',
+                payout: 0
+            };
         }
 
         if(!policy.coveredIncidents.includes(claim.incidentType)) {
-            this.claimStatus = 'denied';
-            return;
+            return {
+                status: 'denied',
+                reasonCode: 'incident_not_covered',
+                payout: 0
+            };
         }
-    }
 
-    public getClaimStatus(): ClaimStatus {
-        return this.claimStatus;
+        const payout = claim.amountClaimed - policy.deductible;
+
+        return {
+            status: 'approved',
+            reasonCode: null,
+            payout
+        }
     }
 }
