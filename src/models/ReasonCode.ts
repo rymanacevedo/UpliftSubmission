@@ -1,4 +1,5 @@
 export const ReasonCode = {
+    APPROVED: 'APPROVED',
     ZERO_PAYOUT: 'ZERO_PAYOUT',
     NOT_COVERED: 'NOT_COVERED',
     POLICY_EXPIRED: 'POLICY_EXPIRED',

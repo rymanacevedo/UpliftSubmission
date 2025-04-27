@@ -4,7 +4,7 @@ import { Policy } from "../models/Policy";
 import { ReasonCode } from '../models/ReasonCode';
 
 interface ClaimResult {
-    status: ClaimStatus;
+    approved: boolean;
     reasonCode: string | null;
     payout: number;
 }
@@ -13,7 +13,7 @@ export class ClaimProcessor {
     public evaluateClaim(claim: Claim, policy: Policy): ClaimResult {
         if(!policy) {
             return {
-                status: 'denied',
+                approved: false,
                 reasonCode: ReasonCode.POLICY_NOT_FOUND,
                 payout: 0
             };
@@ -21,7 +21,7 @@ export class ClaimProcessor {
 
         if(policy.endDate < new Date()) {
             return {
-                status: 'denied',
+                approved: false,
                 reasonCode: ReasonCode.POLICY_EXPIRED,
                 payout: 0
             };
@@ -29,7 +29,7 @@ export class ClaimProcessor {
 
         if(!policy.coveredIncidents.includes(claim.incidentType)) {
             return {
-                status: 'denied',
+                approved: false,
                 reasonCode: ReasonCode.NOT_COVERED,
                 payout: 0
             };
@@ -39,7 +39,7 @@ export class ClaimProcessor {
 
         if(payout <= 0) {
             return {
-                status: 'denied',
+                approved: false,
                 reasonCode: ReasonCode.ZERO_PAYOUT,
                 payout: 0
             }
@@ -47,8 +47,8 @@ export class ClaimProcessor {
 
 
         return {
-            status: 'approved',
-            reasonCode: null,
+            approved: true,
+            reasonCode: ReasonCode.APPROVED,
             payout
         }
     }
