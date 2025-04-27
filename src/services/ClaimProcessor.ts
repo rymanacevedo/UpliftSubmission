@@ -45,6 +45,13 @@ export class ClaimProcessor {
             }
         }
 
+        if(payout > policy.coverageLimit) {
+            return {
+                approved: true,
+                reasonCode: ReasonCode.COVERAGE_LIMIT_EXCEEDED,
+                payout: policy.coverageLimit
+            }
+        }
 
         return {
             approved: true,
