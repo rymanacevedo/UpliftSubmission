@@ -22,7 +22,7 @@ it('should deny claim if incidentType is not covered', async() => {
     const notCoveredPolicy: Policy = {
         policyId: 'POL123',
         startDate: new Date('2022-01-01'),
-        endDate: new Date('2023-01-01'),
+        endDate: new Date('2025-12-31'),
         deductible: 500,
         coverageLimit: 10000,
         coveredIncidents: ['accident'],
