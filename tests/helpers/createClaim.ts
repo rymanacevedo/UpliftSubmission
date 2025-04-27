@@ -1,6 +1,6 @@
 import { Claim } from "../../src/models/Claim";
 
-const createClaim = (overrides?: Partial<Claim>): Claim => {
+export const createClaim = (overrides?: Partial<Claim>): Claim => {
     const baseClaim: Claim = {
         policyId: 'POL-TEST',
         incidentType: 'fire',

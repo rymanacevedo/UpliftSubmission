@@ -1,6 +1,6 @@
 import { Policy } from "../../src/models/Policy";
 
-const createPolicy = (overrides?: Partial<Policy>): Policy => {
+export const createPolicy = (overrides?: Partial<Policy>): Policy => {
     const basePolicy: Policy = {
       policyId: 'POL-TEST',
       startDate: new Date('2022-01-01'),
