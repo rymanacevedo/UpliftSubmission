@@ -9,15 +9,26 @@ describe('ClaimProcessor Evaluation', () => {
         processor = new ClaimProcessor();
     });
 
-    it('should deny claim if no policy is expired', async() => {
+    it('should deny claim if policy is expired', async() => {
         const expiredPolicy = createPolicy({
             startDate: new Date('2023-07-01'),
             endDate: new Date('2024-07-01'),
           });
-          const claim = createClaim({ incidentDate: new Date('2023-06-15') }); // Incident before start
+          const claim = createClaim();
       
         const {approved} = processor.evaluateClaim(claim, expiredPolicy);
         expect(approved).toBe(false);
+    });
+
+    it('should deny claim if claim is before policy start date', async() => {
+        const policy = createPolicy({
+            startDate: new Date('2023-07-01'),
+          });
+          const claimBeforeStartDate = createClaim({
+            incidentDate: new Date('2023-06-01')
+          });   
+          const {approved} = processor.evaluateClaim(claimBeforeStartDate, policy);
+          expect(approved).toBe(false);
     });
     
     it('should deny claim if incidentType is not covered', async() => {

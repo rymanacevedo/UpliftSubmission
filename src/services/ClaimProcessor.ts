@@ -18,7 +18,7 @@ export class ClaimProcessor {
 			};
 		}
 
-		if (policy.endDate < new Date()) {
+		if (policy.endDate < new Date() || claim.incidentDate < policy.startDate) {
 			return {
 				approved: false,
 				reasonCode: ReasonCode.POLICY_EXPIRED,
