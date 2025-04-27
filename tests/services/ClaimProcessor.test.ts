@@ -3,97 +3,94 @@ import { ReasonCode } from '../../src/models/ReasonCode';
 import { exampleClaim } from './../../data/claim';
 import { ClaimProcessor } from './../../src/services/ClaimProcessor';
 
-it('should deny claim if no policy is expired', async() => {
-    const processor = new ClaimProcessor();
-    const expiredPolicy: Policy = {
-        policyId: 'POL123',
-        startDate: new Date('2022-01-01'),
-        endDate: new Date('2023-01-01'),
-        deductible: 500,
-        coverageLimit: 10000,
-        coveredIncidents: ['accident', 'fire'],
-    }
-    const {approved} = processor.evaluateClaim(exampleClaim, expiredPolicy);
-    expect(approved).toBe(false);
-});
+describe('ClaimProcessor Evaluation', () => {
+    let processor: ClaimProcessor;
+    beforeEach(() => {
+        processor = new ClaimProcessor();
+    });
 
-it('should deny claim if incidentType is not covered', async() => {
-    const processor = new ClaimProcessor();
-    const notCoveredPolicy: Policy = {
-        policyId: 'POL123',
-        startDate: new Date('2022-01-01'),
-        endDate: new Date('2025-12-31'),
-        deductible: 500,
-        coverageLimit: 10000,
-        coveredIncidents: ['accident'],
-    }
-    const {approved} = processor.evaluateClaim(exampleClaim, notCoveredPolicy);
-    expect(approved).toBe(false);
-});
-
-it('should payout the amount claimed minus deductible', async() => {
-    const processor = new ClaimProcessor();
-    const validPolicy: Policy = {
-        policyId: 'POL123',
-        startDate: new Date('2022-01-01'),
-        endDate: new Date('2025-12-31'),
-        deductible: 500,
-        coverageLimit: 10000,
-        coveredIncidents: ['accident', 'fire'],
-    }
+    it('should deny claim if no policy is expired', async() => {
+        const expiredPolicy: Policy = {
+            policyId: 'POL123',
+            startDate: new Date('2022-01-01'),
+            endDate: new Date('2023-01-01'),
+            deductible: 500,
+            coverageLimit: 10000,
+            coveredIncidents: ['accident', 'fire'],
+        }
+        const {approved} = processor.evaluateClaim(exampleClaim, expiredPolicy);
+        expect(approved).toBe(false);
+    });
     
-    const {payout} = processor.evaluateClaim(exampleClaim, validPolicy);
-    expect(payout).toBe(exampleClaim.amountClaimed - validPolicy.deductible);
+    it('should deny claim if incidentType is not covered', async() => {
+        const notCoveredPolicy: Policy = {
+            policyId: 'POL123',
+            startDate: new Date('2022-01-01'),
+            endDate: new Date('2025-12-31'),
+            deductible: 500,
+            coverageLimit: 10000,
+            coveredIncidents: ['accident'],
+        }
+        const {approved} = processor.evaluateClaim(exampleClaim, notCoveredPolicy);
+        expect(approved).toBe(false);
+    });
+    
+    it('should payout the amount claimed minus deductible', async() => {
+        const validPolicy: Policy = {
+            policyId: 'POL123',
+            startDate: new Date('2022-01-01'),
+            endDate: new Date('2025-12-31'),
+            deductible: 500,
+            coverageLimit: 10000,
+            coveredIncidents: ['accident', 'fire'],
+        }
+        
+        const {payout} = processor.evaluateClaim(exampleClaim, validPolicy);
+        expect(payout).toBe(exampleClaim.amountClaimed - validPolicy.deductible);
+    }
+    );
+    
+    it('should return zero if payout is negative', async() => {
+        const validPolicyWithLargeDeductible: Policy = {
+            policyId: 'POL123',
+            startDate: new Date('2022-01-01'),
+            endDate: new Date('2025-12-31'),
+            deductible: 5000,
+            coverageLimit: 10000,
+            coveredIncidents: ['accident', 'fire'],
+        }
+        const {payout, reasonCode} = processor.evaluateClaim(exampleClaim, validPolicyWithLargeDeductible);
+        expect(payout).toBe(0);
+        expect(reasonCode).toBe(ReasonCode.ZERO_PAYOUT);
+    });
+    
+    it('should return zero if payout is zero because deductible is equal to amount claimed', async() => {
+        const validPolicyWithEqualDeductible: Policy = {
+            policyId: 'POL123',
+            startDate: new Date('2022-01-01'),
+            endDate: new Date('2025-12-31'),
+            deductible: exampleClaim.amountClaimed,
+            coverageLimit: 10000,
+            coveredIncidents: ['accident', 'fire'],
+        }
+        const {payout, reasonCode} = processor.evaluateClaim(exampleClaim, validPolicyWithEqualDeductible);
+        expect(payout).toBe(0);
+        expect(reasonCode).toBe(ReasonCode.ZERO_PAYOUT);
+    });
+    
+    it('should return no more then the coverage limit', async() => {
+        const policyWithLowCoverageLimit: Policy = {
+            policyId: 'POL123',
+            startDate: new Date('2022-01-01'),
+            endDate: new Date('2025-12-31'),
+            deductible: 500,
+            coverageLimit: 1000,
+            coveredIncidents: ['accident', 'fire'],
+        }
+    
+        const {payout} = processor.evaluateClaim(exampleClaim, policyWithLowCoverageLimit);
+        expect(payout).toBeLessThanOrEqual(policyWithLowCoverageLimit.coverageLimit);
+    })
+
 }
 );
-
-it('should return zero if payout is negative', async() => {
-    const processor = new ClaimProcessor();
-    const validPolicyWithLargeDeductible: Policy = {
-        policyId: 'POL123',
-        startDate: new Date('2022-01-01'),
-        endDate: new Date('2025-12-31'),
-        deductible: 5000,
-        coverageLimit: 10000,
-        coveredIncidents: ['accident', 'fire'],
-    }
-    const {payout, reasonCode} = processor.evaluateClaim(exampleClaim, validPolicyWithLargeDeductible);
-    expect(payout).toBe(0);
-    expect(reasonCode).toBe(ReasonCode.ZERO_PAYOUT);
-});
-
-it('should return zero if payout is zero because deductible is equal to amount claimed', async() => {
-    const processor = new ClaimProcessor();
-    const validPolicyWithEqualDeductible: Policy = {
-        policyId: 'POL123',
-        startDate: new Date('2022-01-01'),
-        endDate: new Date('2025-12-31'),
-        deductible: exampleClaim.amountClaimed,
-        coverageLimit: 10000,
-        coveredIncidents: ['accident', 'fire'],
-    }
-    const {payout, reasonCode} = processor.evaluateClaim(exampleClaim, validPolicyWithEqualDeductible);
-    expect(payout).toBe(0);
-    expect(reasonCode).toBe(ReasonCode.ZERO_PAYOUT);
-});
-
-it('should return no more then the coverage limit', async() => {
-    const processor = new ClaimProcessor();
-    const policyWithLowCoverageLimit: Policy = {
-        policyId: 'POL123',
-        startDate: new Date('2022-01-01'),
-        endDate: new Date('2025-12-31'),
-        deductible: 500,
-        coverageLimit: 1000,
-        coveredIncidents: ['accident', 'fire'],
-    }
-
-    const {payout} = processor.evaluateClaim(exampleClaim, policyWithLowCoverageLimit);
-    expect(payout).toBeLessThanOrEqual(policyWithLowCoverageLimit.coverageLimit);
-})
-
-// it('should approve a claim', async() => {
-//     const processor = new ClaimProcessor();
-//     processor.evaluateClaim({}, []);
-//     expect(processor.getClaimStatus()).toBe('approved');
-// });
