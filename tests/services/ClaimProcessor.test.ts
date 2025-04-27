@@ -45,6 +45,20 @@ it('should payout the amount claimed minus deductible', async() => {
     expect(payout).toBe(exampleClaim.amountClaimed - validPolicy.deductible);
 }
 );
+
+it('should return zero if payout is negative or zero', async() => {
+    const processor = new ClaimProcessor();
+    const validPolicyWithLargeDeductible: Policy = {
+        policyId: 'POL123',
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2025-12-31'),
+        deductible: 5000,
+        coverageLimit: 10000,
+        coveredIncidents: ['accident', 'fire'],
+    }
+    const {payout} = processor.evaluateClaim(exampleClaim, validPolicyWithLargeDeductible);
+    expect(payout).toBe(0);
+});
 // it('should approve a claim', async() => {
 //     const processor = new ClaimProcessor();
 //     processor.evaluateClaim({}, []);
