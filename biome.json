@@ -1,18 +1,21 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "formatter": {
-    "enabled": false
-  },
-  "linter": {
-    "enabled": false
-  },
-  "organizeImports": {
-    "enabled": false
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "lineWidth": 120
-    }
-  }
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"formatter": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"lineWidth": 120
+		}
+	},
+	"files": {
+		"include": ["src/**/*.ts", "test/**/*.ts"]
+	}
 }
